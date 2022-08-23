@@ -1,0 +1,37 @@
+--track0:色相変更,-360,360,0,0.1
+--track1:反転,0,1,0,1
+--file:
+
+--オブジェクト白黒化
+
+	obj.effect("色調補正", "彩度", 0.0)
+
+	if obj.track1 == 1 then
+		obj.effect("反転", "輝度反転", 1) 
+	end
+	
+	obj.copybuffer("tmp","obj")
+
+--グラデーション色情報配列化
+
+	obj.load("image", file)
+	obj.effect("色調補正", "色相", obj.track0)
+
+	grad = {}
+	for gx = 1, 256 do
+		grad[gx], a1 = obj.getpixel(gx-1, 0, "col")
+	end
+
+--オブジェクトピクセル置き換え
+
+	obj.copybuffer("obj","tmp")
+
+	data, w, h = obj.getpixeldata()
+
+	for hc = 0, h-1 do
+		for wc = 0, w-1 do
+			mem, g, b, a2 = obj.getpixel(wc, hc, "rgb")
+			obj.pixeloption("type", "col")
+			obj.putpixel(wc, hc, grad[mem+1], 1.0)
+		end
+	end
